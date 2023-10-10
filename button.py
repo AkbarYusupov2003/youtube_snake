@@ -1,3 +1,4 @@
+# Class for handy button functionality in pygame
 class Button:
     def __init__(self, pos, text_input, font, color):
         self.x_pos = pos[0]

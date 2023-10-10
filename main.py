@@ -9,6 +9,7 @@ from button import Button
 class Snake:
 
     def __init__(self):
+        """Setting up pygame and calling menu method to start events"""
         pygame.init()
         self.SCREEN = pygame.display.set_mode((settings.WIDTH, settings.HEIGHT))
         self.clock = pygame.time.Clock()
@@ -17,12 +18,13 @@ class Snake:
 
     @staticmethod
     def create_records_table():
-        # Создаем таблицу records
+        """Method which creates table for storing records"""
         with sqlite3.connect("snake.db") as conn:
             conn.execute("CREATE TABLE IF NOT EXISTS records (score INTEGER);")
 
     @staticmethod
     def select_best_score():
+        """Method which returns maximal score of the table"""
         with sqlite3.connect("snake.db") as conn:
             cursor = conn.cursor()
             best_score = cursor.execute(
@@ -32,9 +34,12 @@ class Snake:
 
     @staticmethod
     def font(size):
+        """Method for convenient font setup"""
         return pygame.font.SysFont("times new roman", size)
 
     def menu(self):
+        # Main window of the game
+
         pygame.display.set_caption("Меню")
 
         self.SCREEN.fill(pygame.Color("#ECECEC"))
@@ -80,6 +85,8 @@ class Snake:
             self.clock.tick(60)
 
     def play(self):
+        # Game logic
+
         pygame.display.set_caption("Змейка")
 
         objects_size = settings.OBJECTS_SIZE
@@ -104,12 +111,12 @@ class Snake:
                 )
             # drawing apple
             pygame.draw.rect(self.SCREEN, pygame.Color("red"), (*apple, objects_size, objects_size))
-            # show score
+            # showing score
             render_score = score_font.render(
                 f"Счет: {score}", True, pygame.Color("#4e89ef")
             )
             self.SCREEN.blit(render_score, (10, 10))
-            # snake movement
+            # moving snake
             snake_x += dx * objects_size
             snake_y += dy * objects_size
             snake.append((snake_x, snake_y))
@@ -120,7 +127,7 @@ class Snake:
                 snake_length += 1
                 snake_speed += 1
                 score += 1
-            # game over
+            # check if game is over
             if (
                 snake_x < 0 or
                 snake_x > settings.WIDTH - objects_size or
@@ -166,6 +173,8 @@ class Snake:
                     pygame.display.update()
                     self.clock.tick(60)
 
+            # We determine the direction of the snake and block the
+            # possibility of movement in the opposite direction
             key = pygame.key.get_pressed()
             if key[pygame.K_w] and snake_direction != "DOWN":
                 dx, dy = 0, -1
@@ -188,6 +197,7 @@ class Snake:
             self.clock.tick(snake_speed)
 
     def reset(self):
+        # Erasing data from the records table
         pygame.display.set_caption("Сброс рекорда")
 
         with sqlite3.connect("snake.db") as conn:
